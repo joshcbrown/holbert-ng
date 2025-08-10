@@ -3,7 +3,7 @@ module IntCmp = Belt.Id.MakeComparable({
   let cmp = Pervasives.compare
 })
 
-type rec piece =
+type piece =
   | String(string)
   | Var({idx: int})
   | Schematic({schematic: int, allowed: array<int>})
@@ -344,14 +344,7 @@ let parse: (string, ~scope: array<meta>, ~gen: gen=?) => result<(t, remaining), 
     acc := Error(`problem here: ${codeAroundLoc}...: ${msg}`)
   }
 
-  let execRe = (re, str) => {
-    re
-    ->RegExp.exec(str)
-    ->Option.map(result => {
-      open RegExp.Result
-      (matches(result), fullMatch(result)->String.length)
-    })
-  }
+  let execRe = Util.execRe
   let advance = n => {
     pos := pos.contents + n
   }
@@ -366,7 +359,7 @@ let parse: (string, ~scope: array<meta>, ~gen: gen=?) => result<(t, remaining), 
   }
   let execRe = re => execRe(re, String.sliceToEnd(str, ~start=pos.contents))
   let stringLit = () => {
-    let identRegex = %re(`/^([a-zA-Z][a-zA-Z\d]*)/`)
+    let identRegex = RegExp.fromString(`^${Util.identRegexStr}`)
     let symbolRegex = %re(`/^([!@#\$%\^~&*_+\-={};':|,.<>\/?]+)/`)
     let numberRegex = %re(`/^(\d+)/`)
     switch execRe(identRegex)
