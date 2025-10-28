@@ -13,8 +13,9 @@ module DerivationsOrLemmasView = MethodView.CombineMethodView(
   ),
   MethodView.EliminationView(HOTerm, HOTermJ),
 )
+module GoalViewS = GoalView.DefaultGoalView(HOTerm, HOTermJ, DerivationsOrLemmasView.Method)
 module TheoremS = Editable.TextArea(
-  Theorem.Make(HOTerm, HOTermJ, HOTermJView, DerivationsOrLemmasView),
+  Theorem.Make(HOTerm, HOTermJ, HOTermJView, DerivationsOrLemmasView, GoalViewS),
 )
 module ConfS = ConfigBlock.Make(HOTerm, HOTermJ)
 
@@ -31,6 +32,13 @@ module DLEStrView = MethodView.CombineMethodView(
   DerivationsOrLemmasStrView,
   MethodView.EliminationView(StringTerm, StringTermJudgment),
 )
+module GoalViewDL = GoalView.DefaultGoalView(StringTerm, StringTermJudgment, DLEStrView.Method)
+module GoalViewStr = GoalView.Combine(
+  StringTerm,
+  StringTermJudgment,
+  GoalViewDL,
+  GoalView.EliminationGoalView(StringTerm, StringTermJudgment),
+)
 module TheoremStr = Editable.TextArea(
-  Theorem.Make(StringTerm, StringTermJudgment, StringTermJView, DLEStrView),
+  Theorem.Make(StringTerm, StringTermJudgment, StringTermJView, DLEStrView, GoalViewDL),
 )

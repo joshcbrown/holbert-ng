@@ -347,6 +347,11 @@ module Elimination = (Term: TERM, Judgment: JUDGMENT with module Term := Term) =
   }
 
   let apply = (ctx: Context.t, j: Judgment.t, gen: Term.gen, f: Rule.t => 'a) => {
+    // LOCAL VS GLOBAL:
+    // everything introduced in current proof
+    // add Evil term level thing if can unify with Evil,
+    // can just be a special string with section symbols
+    //
     let ret = Dict.make()
     let possibleRules =
       ctx.facts

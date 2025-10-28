@@ -6,6 +6,10 @@ module Make = (
   Judgment: JUDGMENT with module Term := Term,
   JudgmentView: JUDGMENT_VIEW with module Term := Term and module Judgment := Judgment,
   MethodView: METHOD_VIEW with module Term := Term and module Judgment := Judgment,
+  GoalView: GoalView.GOAL_VIEW
+    with module Term := Term
+    and module Judgment := Judgment
+    and module Method := MethodView.Method,
 ) => {
   module Rule = Rule.Make(Term, Judgment)
   module ScopeView = ScopeView.Make(Term, JudgmentView.TermView)
@@ -36,21 +40,12 @@ module Make = (
           <div className="proof-show">
             <JudgmentView judgment={rule.conclusion} scope />
             {switch method {
-            | Goal(options) =>
-              options(props.gen)
-              ->Dict.toArray
-              ->Array.map(((str, (opt, subst))) => {
-                <button
-                  key=str
-                  onClick={_ =>
-                    props.onChange(
-                      Proof.Checked({fixes, assumptions, method: Do(opt), rule}),
-                      subst,
-                    )}>
-                  {React.string(str)}
-                </button>
-              })
-              ->React.array
+            | Goal(options) => {
+                let submit = (opt, subst) =>
+                  props.onChange(Proof.Checked({fixes, assumptions, method: Do(opt), rule}), subst)
+                let dict = options(props.gen)
+                GoalView.make(~dict, ~submit)
+              }
             | Do(method) =>
               React.createElement(
                 MethodView.make(p =>

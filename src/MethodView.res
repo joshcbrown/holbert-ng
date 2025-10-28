@@ -4,6 +4,7 @@ module type METHOD_VIEW = {
   module Term: TERM
   module Judgment: JUDGMENT with module Term := Term
   module Method: PROOF_METHOD with module Term := Term and module Judgment := Judgment
+  module GoalView: //...
   type props<'a> = {
     method: Method.t<'a>,
     scope: array<Term.meta>,

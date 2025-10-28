@@ -6,11 +6,15 @@ module Make = (
   Judgment: JUDGMENT with module Term := Term,
   JudgmentView: JUDGMENT_VIEW with module Term := Term and module Judgment := Judgment,
   MethodView: METHOD_VIEW with module Term := Term and module Judgment := Judgment,
+  GoalView: GoalView.GOAL_VIEW
+    with module Term := Term
+    and module Judgment := Judgment
+    and module Method := MethodView.Method,
 ) => {
   module Rule = Rule.Make(Term, Judgment)
   module Proof = Proof.Make(Term, Judgment, MethodView.Method)
   module Context = Method.Context(Term, Judgment)
-  module ProofView = ProofView.Make(Term, Judgment, JudgmentView, MethodView)
+  module ProofView = ProofView.Make(Term, Judgment, JudgmentView, MethodView, GoalView)
   open RuleView
   module RuleView = RuleView.Make(Term, Judgment, JudgmentView)
   module Ports = Ports(Term, Judgment)
